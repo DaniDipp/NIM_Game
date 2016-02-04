@@ -37,7 +37,7 @@ public class DynamicClientFrame extends JFrame {
 	 */
 	public DynamicClientFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 300);
+		setBounds(100, 100, 500, 312);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -122,6 +122,12 @@ public class DynamicClientFrame extends JFrame {
 		JButton btn36 = new JButton(" | ");
 		btn36.setFont(new Font("Segoe UI Black", Font.PLAIN, 32));
 		panel_3.add(btn36);
+		
+		JPanel panel_4 = new JPanel();
+		contentPane.add(panel_4);
+		
+		JButton btnReset = new JButton("Reset");
+		panel_4.add(btnReset);
 	}
 
 }
