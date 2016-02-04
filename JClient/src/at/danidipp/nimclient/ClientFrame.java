@@ -378,12 +378,20 @@ public class ClientFrame extends JFrame {
 	
 	protected void btnEndRoundActionPerformed(ActionEvent e) {
 		if(numberOfChangedlines() == 0){
-			JOptionPane.showMessageDialog(null,"No moves selected");
+			JOptionPane.showMessageDialog(this,"No moves selected");
 			return;
 		}
 		
 		if(numberOfChangedlines() > 1){
-			JOptionPane.showMessageDialog(null, "Don't select strikes in more then one row!");
+			Object[] options = {"OK", "Reset"};
+			int optionSelection = JOptionPane.showOptionDialog(this, "Don't select strikes in more than one row!",  "", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+			
+			if(optionSelection == 1){	//Selected "Reset"
+
+				btnResetActionPerformed(e);
+				return;
+			}
+			
 			return;
 		}
 		
