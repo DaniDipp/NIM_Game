@@ -386,11 +386,12 @@ public class ClientFrame extends JFrame {
 			Object[] options = {"OK", "Reset"};
 			int optionSelection = JOptionPane.showOptionDialog(this, "Don't select strikes in more than one row!",  "", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 			
-			if(optionSelection == 0){
+			if(optionSelection == 1){	//Selected "Reset"
+
+				btnResetActionPerformed(e);
 				return;
 			}
 			
-			btnResetActionPerformed(e);
 			return;
 		}
 		
