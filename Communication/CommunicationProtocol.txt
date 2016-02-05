@@ -1,11 +1,11 @@
 ---Stick arrange---
-      *
- 	 ***
-    *****
-   ******* 
+      *			Row 0: 1 Element
+     ***       	Row 1: 3 Elements 	 
+    *****		Row 2: 5 Elements
+   ******* 		Row 3: 7 Elements
    
 ---Protocol---
-<char><arguments>
+<char><arguments><separator>
  
 "s" ... stick
 "e" ... enabled
