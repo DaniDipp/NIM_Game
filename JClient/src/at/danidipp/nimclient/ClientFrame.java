@@ -1,14 +1,15 @@
 package at.danidipp.nimclient;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
-
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 
 public class ClientFrame extends JFrame {
@@ -56,6 +57,15 @@ public class ClientFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public ClientFrame() {
+		setTitle("NIM Game");
+		
+		try {
+		    this.setIconImage(ImageIO.read(new File("res/icon.png")));
+		}
+		catch (IOException exc) {
+		    exc.printStackTrace();
+		}
+		
 		initComponents();
 	}
 	private void initComponents() {
