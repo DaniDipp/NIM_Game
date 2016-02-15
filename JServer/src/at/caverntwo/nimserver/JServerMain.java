@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import at.caverntwo.communication.Encoder;
+
 public class JServerMain {
 
 	public static void main(String[] args)
@@ -34,7 +36,7 @@ public class JServerMain {
 				{
 					System.out.println("Client successfully connected, starting game...");
 					Thread gameInstance = new Thread(new JServerGameInstance(connection));
-					gameInstance.start();					
+					gameInstance.start();
 				}
 			}
 			catch(Exception ex)
