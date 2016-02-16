@@ -1,0 +1,36 @@
+---Stick arrange---
+      *			Row 0: 1 Element
+     ***       	Row 1: 3 Elements 	 
+    *****		Row 2: 5 Elements
+   ******* 		Row 3: 7 Elements
+   
+---Protocol---
+<char><arguments><separator>
+ 
+"s" ... stick
+"e" ... enabled
+"d" ... disabled
+"m" ... message
+":" ... setter
+";" ... separator
+ 
+ Separator ';' is put after every element
+ 
+---Sticks---
+ ('s')(byte y)(byte x)(':')('e'or'd')(char ';')
+ 
+Examples:
+"s00:d;" = [0,0], disabled  {top}
+"s10:e;" = [1,0], enabled
+"s11:e;" = [1,1], enabled
+...
+"s36:d;" = [3,6], disabled
+ 
+server and client both update all elements every time
+ 
+---Messages---
+(char 'm')(String message)
+
+Examples:
+"mmymessage;" => "mymessage"
+"mthis is a message!;" => "this is a message!"
