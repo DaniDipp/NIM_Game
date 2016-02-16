@@ -87,17 +87,42 @@ public class ClientFrame extends JFrame {
 		
 		if (modeSelection == 0){		//vs Machine selected
 			gameModeCoOp = false;
-			
+
 			String[] ipParts;
 			do {
 				serverIp = JOptionPane.showInputDialog("Server IP:", "localhost");
 				ipParts =  serverIp.split(":");		//removing Port, if applicable
-				serverPort = ipParts[1].isEmpty() ? 10110 : Integer.parseInt(ipParts[1]); //writes the custom port in the field variable for later use
+				serverPort = ipParts.length == 1 ? 10110 : Integer.parseInt(ipParts[1]); //writes the custom port in the field variable for later use
 			} while (!isIp4Address(ipParts[0]));
 			
 			
 		} else if (modeSelection == 1){	//vs Human selected
+			Object[] connectionOptions = {"Local", "Network"};
+			int connectionSelection = JOptionPane.showOptionDialog(this, "Select Game Mode",  "Initialize Game", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, connectionOptions, connectionOptions[0]);
 			
+			if (connectionSelection == 0){	//Local selected
+				gameModeCoOp = true;
+				
+				player1Name = JOptionPane.showInputDialog("First Players Name:", "Player 1");
+				player2Name = JOptionPane.showInputDialog("Secon Players Name:", "Player 2");
+				
+				Object[] firstMoveOptions = {player1Name, "Random", player2Name};
+				int firstMoveSelection = JOptionPane.showOptionDialog(this, "Who begins?",  "Initialize Game", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, firstMoveOptions, firstMoveOptions[1]);
+				
+				switch (firstMoveSelection) {
+				case 0:
+					currentPlayer1 = true;
+					break;
+				case 1:
+					currentPlayer1 = (Math.random()*2) > 1.0 ? true : false;
+					break;
+				case 2:
+					currentPlayer1 = false;
+				default:
+					break;
+				}
+				super.setTitle("NIM Game | " + (currentPlayer1 ? player1Name : player2Name));
+			}
 		}
 		
 		
@@ -489,17 +514,9 @@ public class ClientFrame extends JFrame {
 	private void managePlayers() {
 
 		if(gameModeCoOp){
-			if (currentPlayer1) {
-				super.setTitle("NIM Game | " + player1Name);
-			}else{
-				super.setTitle("NIM Game | " + player2Name);
-			}
+			super.setTitle("NIM Game | " + (currentPlayer1 ? player1Name : player2Name));
 		}else{
-			if (currentPlayer1) {
-				super.setTitle("NIM Game | " + player1Name);
-			}else{
-				super.setTitle("NIM Game | Server");
-			}
+			super.setTitle("NIM Game | " + (currentPlayer1 ? player1Name : "Server"));
 		}
 		currentPlayer1 = !currentPlayer1;
 	}
