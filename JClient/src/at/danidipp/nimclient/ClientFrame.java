@@ -1,14 +1,19 @@
 package at.danidipp.nimclient;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
-
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.awt.event.ActionEvent;
 
 public class ClientFrame extends JFrame {
@@ -35,6 +40,11 @@ public class ClientFrame extends JFrame {
 	private boolean[][] buttonStates = {{true}, {true, true, true}, {true, true, true, true, true}, {true, true, true, true, true, true, true}};
 	private boolean[][] oldButtonStates =  {{true}, {true, true, true}, {true, true, true, true, true}, {true, true, true, true, true, true, true}};
 	private JButton btnReset;
+	private boolean currentPlayer1 = true;
+	private String player1Name = "Player 1";
+	private String player2Name = "Player 2";
+	private String serverIp = "localhost";
+	private int serverPort = 10110;
 	
 	/**
 	 * Launch the application.
@@ -56,8 +66,106 @@ public class ClientFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public ClientFrame() {
+		setTitle("NIM Game");
+		
+		try {
+		    this.setIconImage(ImageIO.read(new File("res/icon.png")));
+		}
+		catch (IOException exc) {
+		    exc.printStackTrace();
+		}
+		
 		initComponents();
+		
+		initGameRules();
 	}
+	private void initGameRules() {
+		
+		Object[] modeOptions = {"vs Machine", "vs Human"};
+		int modeSelection = JOptionPane.showOptionDialog(this, "Select Game Mode",  "Initialize Game", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, modeOptions, modeOptions[0]);
+		
+		if (modeSelection == 0){		//vs Machine selected
+
+			String[] ipParts;
+			do {
+				serverIp = JOptionPane.showInputDialog("Server IP:", "localhost");
+				ipParts =  serverIp.split(":");		//removing Port, if applicable
+				serverPort = ipParts.length == 1 ? 10110 : Integer.parseInt(ipParts[1]); //writes the custom port in the field variable for later use
+			} while (!isIp4Address(ipParts[0]));
+			
+			// TODO connect to Server
+			
+			player1Name = JOptionPane.showInputDialog("Player Name:", "Player");
+			player2Name = "Server";
+			
+			firstMoveDeterminaton();
+			
+		} else if (modeSelection == 1){	//vs Human selected
+			Object[] connectionOptions = {"Local", "Network"};
+			int connectionSelection = JOptionPane.showOptionDialog(this, "Select Game Mode",  "Initialize Game", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, connectionOptions, connectionOptions[0]);
+			
+			if (connectionSelection == 0){	//Local selected
+				
+				player1Name = JOptionPane.showInputDialog("First Players Name:", "Player 1");
+				player2Name = JOptionPane.showInputDialog("Secon Players Name:", "Player 2");
+				
+				firstMoveDeterminaton();
+			}else if (connectionSelection == 1){ //Network selected
+				
+				// TODO Maybe Master/Slave selection
+				String[] ipParts;
+				do {
+					serverIp = JOptionPane.showInputDialog("Server IP:", "localhost");
+					ipParts =  serverIp.split(":");		//removing Port, if applicable
+					serverPort = ipParts.length == 1 ? 10110 : Integer.parseInt(ipParts[1]); //writes the custom port in the field variable for later use
+				} while (!isIp4Address(ipParts[0]));
+				
+				// TODO connect to other Player
+				
+				player1Name = JOptionPane.showInputDialog("Player Name:", "Player");
+				player2Name = "Server"; //TODO Get name from other Player
+				
+				firstMoveDeterminaton(); //Only Host
+			}
+		}
+		
+		
+	}
+
+	private void firstMoveDeterminaton() {
+		// TODO Auto-generated method stub
+		Object[] firstMoveOptions = {player1Name, "Random", player2Name};
+		int firstMoveSelection = JOptionPane.showOptionDialog(this, "Who begins?",  "Initialize Game", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, firstMoveOptions, firstMoveOptions[1]);
+		
+		switch (firstMoveSelection) {
+		case 0:
+			currentPlayer1 = true;
+			break;
+		case 1:
+			currentPlayer1 = (Math.random()*2) > 1.0 ? true : false;
+			break;
+		case 2:
+			currentPlayer1 = false;
+		default:
+			break;
+		}
+		
+		super.setTitle("NIM Game | " + (currentPlayer1 ? player1Name : player2Name));
+	}
+
+	private boolean isIp4Address(String address) {
+		// TODO Auto-generated method stub
+	    if (address.isEmpty()) {
+	        return false;
+	    }
+	    try {
+	        Object res = InetAddress.getByName(address);
+	        return res instanceof Inet4Address || res instanceof Inet6Address;
+	    } catch (final UnknownHostException ex) {
+	        return false;
+	    }
+	}
+
 	private void initComponents() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 315);
@@ -377,24 +485,8 @@ public class ClientFrame extends JFrame {
 	}
 	
 	protected void btnEndRoundActionPerformed(ActionEvent e) {
-		if(numberOfChangedlines() == 0){
-			JOptionPane.showMessageDialog(this,"No moves selected");
-			return;
-		}
 		
-		if(numberOfChangedlines() > 1){
-			Object[] options = {"OK", "Reset"};
-			int optionSelection = JOptionPane.showOptionDialog(this, "Don't select strikes in more than one row!",  "", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-			
-			if(optionSelection == 1){	//Selected "Reset"
-
-				btnResetActionPerformed(e);
-				return;
-			}
-			
-			return;
-		}
-		
+		checkLegalMoves(e);
 		
 		btn00.setEnabled(buttonStates[0][0]);
 		
@@ -417,8 +509,37 @@ public class ClientFrame extends JFrame {
 		btn36.setEnabled(buttonStates[3][6]);
 		
 		shiftButtonStates();
+		
+		managePlayers();
+		
 	}
 
+
+	private void checkLegalMoves(ActionEvent e) {
+		
+		if(numberOfChangedlines() == 0){
+			JOptionPane.showMessageDialog(this,"No moves selected", "Error", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		if(numberOfChangedlines() > 1){
+			Object[] options = {"OK", "Reset"};
+			int optionSelection = JOptionPane.showOptionDialog(this, "Don't select strikes in more than one row!",  "Error", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+			if(optionSelection == 1){	//Selected "Reset"
+
+				btnResetActionPerformed(e);
+				return;
+			}
+			
+			return;
+		}
+		
+	}
+
+	private void managePlayers() {
+		currentPlayer1 = !currentPlayer1;
+		super.setTitle("NIM Game | " + (currentPlayer1 ? player1Name : player2Name));
+	}
 
 	private int numberOfChangedlines() { //counts lines with changed buttons
 		int numberOfChangedLines = 0;
