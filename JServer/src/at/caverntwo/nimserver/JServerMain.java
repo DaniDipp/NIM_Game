@@ -8,6 +8,8 @@ import at.caverntwo.communication.Encoder;
 
 public class JServerMain {
 
+	private static int id = 0;
+
 	public static void main(String[] args)
 	{
 		StartServerThread(10110);
@@ -35,7 +37,8 @@ public class JServerMain {
 				if (connection.isConnected())
 				{
 					System.out.println("Client successfully connected, starting game...");
-					Thread gameInstance = new Thread(new JServerGameInstance(connection));
+					Thread gameInstance = new Thread(new JServerGameInstance(connection, "NIM_Server"+id ));
+					id++;
 					gameInstance.start();
 				}
 			}
