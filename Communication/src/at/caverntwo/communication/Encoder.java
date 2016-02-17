@@ -1,5 +1,17 @@
 package at.caverntwo.communication;
 
+/**
+ * @author Caverntwo
+ * How to use this class:
+ * <h1>Encoding</h1>
+ * Encodes a command with a  semicolon ';'. Encoding is done with methods that returns properly formatted commands.
+ * <h3>Examples of Return Values</h3>
+ * "mmymessage;"
+ * "s00:e;"
+ * <h1>Decoding</h1>
+ * Decoding is done via the internal class "decoder".
+ * Once a command is decoded, it's parameters can be read via the decoder class.
+ */
 public class Encoder {
 	
 	public static Decoder decoder;
@@ -11,7 +23,7 @@ public class Encoder {
 	
 	public static String DecodeMessage(String encodedMessage)
 	{
-		return encodedMessage.substring(1, encodedMessage.length() - 1);
+		return encodedMessage.charAt(0) == 'm' ? encodedMessage.substring(1, encodedMessage.length() - 1) : null;
 	}
 	
 	public static String EncodeState(byte row, byte coloumn, boolean enabled)
@@ -26,6 +38,10 @@ public class Encoder {
 		return sb.toString();
 	}
 	
+	/**
+	 * You need to read the values from the internal class "decoder".
+	 * @param encodedState
+	 */
 	public void DecodeState(String encodedState)
 	{
 		if (this.decoder == null) this.decoder = new Decoder();
@@ -44,7 +60,7 @@ public class Encoder {
 		if (sb.charAt(4) == 'e') decoder.enabled = true; else decoder.enabled = false;
 	}
 	
-	private class Decoder
+	public class Decoder
 	{		
 		public byte row;
 		public byte coloumn;

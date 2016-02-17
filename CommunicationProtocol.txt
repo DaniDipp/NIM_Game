@@ -34,3 +34,32 @@ server and client both update all elements every time
 Examples:
 "mmymessage;" => "mymessage"
 "mthis is a message!;" => "this is a message!"
+
+---Sequences---
+Hello:
+Client sends to server/connected client (as slave) "mhello;"
+Host respons with "mack;"
+
+Providing the name:
+Client: "mcname:<cname>;"
+Server: "msname:<sname>;"
+
+Determination of the first move:
+Client: "mfirst:<c,s,r>;"
+Server: if (c, s) "mack;", else "mfirst:<c,s>;"
+
+Running Game:
+Server makes a move:
+Server: "mstartupdate;" <all sticks update> "mendupdate;"
+Client: "mack;"
+
+Client makes a move:
+Client: "mstartupdate;" <all sticks update> "mendupdate;"
+Server: "mack;"
+
+Close Connection:
+Server: "mclose;"
+Server breaks connection!
+
+Timeout:
+If Server or Client become unresponsive (no acknowledge) for more than <fixedTimeout>, Server/Client break connection automatically.
