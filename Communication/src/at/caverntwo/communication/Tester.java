@@ -11,12 +11,12 @@ public class Tester {
 	{
 		Encoder encoder = new Encoder();
 		
-		System.out.println(encoder.EncodeMessage("Hörmann"));
-		System.out.println(encoder.EncodeState((byte) 1, (byte) 2, true));
-		System.out.println(encoder.EncodeState((byte) 0, (byte) 2, false));
-		System.out.println(encoder.EncodeState((byte) 1, (byte) 4, true));
+		System.out.println(Encoder.EncodeMessage("Hörmann"));
+		System.out.println(Encoder.EncodeState((byte) 1, (byte) 2, true));
+		System.out.println(Encoder.EncodeState((byte) 0, (byte) 2, false));
+		System.out.println(Encoder.EncodeState((byte) 1, (byte) 4, true));
 		
-		System.out.println(encoder.DecodeMessage("mHörmann;"));
+		System.out.println(Encoder.DecodeMessage("mHörmann;"));
 		Encoder.DecodeState("s12:e;");
 		System.out.println("Row: " + Encoder.decoder.row + ", Coloumn: " + Encoder.decoder.coloumn + ", Enabled: " + Encoder.decoder.enabled);
 		Encoder.DecodeState("s02:d;");

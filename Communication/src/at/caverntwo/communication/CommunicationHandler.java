@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class CommunicationHandler 
 {	
+	public static final String msgAck = "ack";
+	
 	private Socket socket;
 	private PrintWriter out;
 	
@@ -47,4 +49,10 @@ public class CommunicationHandler
 		}
 		return buttonStates;
 	}	
+	
+	public void SendAcknowledge()
+	{
+		send(Encoder.EncodeMessage(msgAck));
+	}
+	
 }
