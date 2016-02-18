@@ -24,5 +24,13 @@ namespace CClient
         {
             InitializeComponent();
         }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            byte? row, coloumn;
+            bool? en;
+            Encoder.DecodeType("s11:e", out row, out coloumn, out en);
+            Console.WriteLine("Row: " + row + ", Coloumn: " + coloumn + ", Enabled " + en);
+        }
     }
 }

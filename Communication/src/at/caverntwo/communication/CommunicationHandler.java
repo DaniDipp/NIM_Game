@@ -1,66 +1,72 @@
 package at.caverntwo.communication;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class CommunicationHandler 
-{	
-	private static final String msgAck = "ack";
-	private static final String msgHello = "hello";
-	
+{   
 	private Socket socket;
 	private PrintWriter out;
 	private BufferedReader in;
+	
+	private boolean[][] lastButtonStates;
+	public boolean recievedButtonStates;
+	public ArrayList<String> NewMessages;
+	public boolean HasNewMessages;
 	
 	public CommunicationHandler(Socket socket_) throws Exception
 	{
 		socket = socket_;
 		out = new PrintWriter(socket.getOutputStream());
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		recievedButtonStates = false;
+		HasNewMessages = false;
+		out.println("Hello"); out.flush();
 	}
 	
-	private void send(String s)
+	public void Send(String s)
 	{
 		out.write(s);
 		System.out.println(s);
 	}
 	
+	public void DoUpdate() throws Exception
+	{
+		ArrayList<String> cmds = new ArrayList<String>();
+		while (true)
+		{
+			String line = in.readLine();
+			out.println(line); out.flush();
+			if (line == null || line.equals("") || !(line.charAt(0) == 's' || line.charAt(0) == 'm')) break; 
+			cmds.add(line);
+		}
+		checkCmds(cmds);
+	}
+	
+	private void checkCmds(ArrayList<String> cmds)
+	{
+		StringBuffer sb = new StringBuffer(); //Temporarily save all states here
+		for (String cmd : cmds) {
+			if (cmd == null) continue;
+			if (cmd.charAt(0) == 's' || cmd.charAt(0) == 'm') {sb.append(cmd); System.out.println(cmd);}
+//			else throw new Exception("Comment not found!");
+		}
+		System.out.println(sb.toString());
+	}
+	
+	public boolean[][] GetButtonStates()
+	{
+		recievedButtonStates = false;
+		return this.lastButtonStates;
+	}
+	
 	public void SendButtonStates(boolean[][] buttonStates)
 	{
-		StringBuffer sb = new StringBuffer();
-		for (byte i = 0; i < buttonStates.length; i++)
-		{
-			for (byte j = 0; j < buttonStates[i].length; j++)
-			{
-				sb.append(Encoder.EncodeState(i, j, buttonStates[i][j]));
-			}
-		}
-		send(sb.toString());
-	}
-	
-	public boolean[][] RecieveButtonStates(String decode)
-	{
-		String[] bs = decode.split(";");
-		boolean[][] buttonStates = {{false}, {false, false, false}, {false, false, false, false, false}, {false, false, false, false, false, false, false}}; //tree initialization
-		for (int i = 0; i < bs.length; i++)
-		{
-			System.out.println(bs[i]);
-			Encoder.DecodeState(bs[i]);
-			System.out.println("dec: row: " + Encoder.decoder.row + ", coloumn: " + Encoder.decoder.coloumn + ", enabled: " + Encoder.decoder.enabled);
-			buttonStates[Encoder.decoder.row][Encoder.decoder.coloumn] = Encoder.decoder.enabled;
-		}
-		return buttonStates;
-	}	
-	
-	public void SendAcknowledge()
-	{
-		send(Encoder.EncodeMessage(msgAck));
-	}
-	
-	public void SayHello()
-	{
-		send(Encoder.EncodeMessage(msgHello));
+		//send buttonStates
+		out.println(Encoder.EncodeButtonStates(buttonStates));
 	}
 }

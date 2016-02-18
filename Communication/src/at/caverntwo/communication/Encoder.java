@@ -26,6 +26,33 @@ public class Encoder {
 		return encodedMessage.charAt(0) == 'm' ? encodedMessage.substring(1, encodedMessage.length()) : null;
 	}
 	
+	public static String EncodeButtonStates(boolean[][] buttonStates)
+	{
+		StringBuffer sb = new StringBuffer();
+		for (byte i = 0; i < buttonStates.length; i++)
+		{
+			for (byte j = 0; j < buttonStates[i].length; j++)
+			{
+				sb.append(Encoder.EncodeState(i, j, buttonStates[i][j]));
+			}
+		}
+		return sb.toString();
+	}
+	
+	public static boolean[][] DecodeButtonStates(String decode)
+	{
+		String[] bs = decode.split(";");
+		boolean[][] buttonStates = {{false}, {false, false, false}, {false, false, false, false, false}, {false, false, false, false, false, false, false}}; //tree initialization
+		for (int i = 0; i < bs.length; i++)
+		{
+			System.out.println(bs[i]);
+			Encoder.DecodeState(bs[i]);
+			System.out.println("dec: row: " + Encoder.decoder.row + ", coloumn: " + Encoder.decoder.coloumn + ", enabled: " + Encoder.decoder.enabled);
+			buttonStates[Encoder.decoder.row][Encoder.decoder.coloumn] = Encoder.decoder.enabled;
+		}
+		return buttonStates;
+	}	
+	
 	public static String EncodeState(byte row, byte coloumn, boolean enabled)
 	{
 		StringBuffer sb = new StringBuffer();
