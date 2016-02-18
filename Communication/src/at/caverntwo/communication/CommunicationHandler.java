@@ -1,25 +1,29 @@
 package at.caverntwo.communication;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class CommunicationHandler 
 {	
-	public static final String msgAck = "ack";
+	private static final String msgAck = "ack";
+	private static final String msgHello = "hello";
 	
 	private Socket socket;
 	private PrintWriter out;
+	private BufferedReader in;
 	
 	public CommunicationHandler(Socket socket_) throws Exception
 	{
 		socket = socket_;
-		//out = new PrintWriter(socket.getOutputStream());
+		out = new PrintWriter(socket.getOutputStream());
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 	
 	private void send(String s)
 	{
-//		out.write(s);
+		out.write(s);
 		System.out.println(s);
 	}
 	
@@ -55,4 +59,8 @@ public class CommunicationHandler
 		send(Encoder.EncodeMessage(msgAck));
 	}
 	
+	public void SayHello()
+	{
+		send(Encoder.EncodeMessage(msgHello));
+	}
 }
