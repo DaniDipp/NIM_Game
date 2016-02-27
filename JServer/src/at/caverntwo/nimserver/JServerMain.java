@@ -36,7 +36,7 @@ public class JServerMain {
 				Socket connection = socket.accept();
 				if (connection.isConnected())
 				{
-					System.out.println("Client successfully connected, starting game...");
+					System.out.println("Client successfully connected, starting game..., local port: " + connection.getLocalPort());
 					Thread gameInstance = new Thread(new JServerGameInstance(connection, "NIM_Server"+id ));
 					id++;
 					gameInstance.start();
